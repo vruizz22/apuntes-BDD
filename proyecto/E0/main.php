@@ -1,7 +1,7 @@
 <?php
 require_once 'Bananer.php';
 
-$bananer = new Bananer('archivo1.csv', 'archivo2.csv');
+$bananer = new Bananer('Archivo1.csv', 'Archivo2.csv');
 
 # Realizar la limpeza de datos de los archivos
 $bananer->deteccionArray();
