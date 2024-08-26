@@ -197,7 +197,14 @@ class Bananer
         foreach ($this->array1 as $key => $value) {
             foreach ($value as $subKey => $subValue) {
                 $datos = explode(";", $subValue);
-                if (isset($datos[0], $datos[10], $datos[1], $datos[20], $datos[21], $datos[22])) {
+                if (isset(
+                    $datos[0],
+                    $datos[10],
+                    $datos[1],
+                    $datos[20],
+                    $datos[21],
+                    $datos[22]
+                )) {
                     $estudiante[$datos[10]] = [
                         'Cohorte' => $datos[0],
                         'Número de estudiante' => $datos[10],
@@ -215,27 +222,50 @@ class Bananer
         foreach ($this->array2 as $key => $value) {
             foreach ($value as $subKey => $subValue) {
                 $datos = explode(";", $subValue);
-                if (isset($datos[0], $datos[1], $datos[5], $datos[6], $datos[7], $datos[8], $datos[9], $datos[10])) {
+                if (isset(
+                    $datos[0],
+                    $datos[1],
+                    $datos[8],
+                    $datos[9],
+                    $datos[10],
+                    $datos[11],
+                    $datos[12],
+                    $datos[13],
+                    $datos[14]
+                )) {
+
+                    if ($datos[9] == "diurno" && $datos[10] == "vespertino") {
+                        $jornada = "completa";
+                    } elseif ($datos[9] == "diurno") {
+                        $jornada = "diurna";
+                    } elseif ($datos[10] == "vespertino") {
+                        $jornada = "vespertina";
+                    } else {
+                        $jornada = "";
+                    }
+
                     $profesor[$datos[0]] = [
                         'RUN' => $datos[0],
                         'DV' => $datos[1],
-                        'contrato' => $datos[5],
-                        'jornada' => $datos[6] == "DIURNO" ? "Diurno" : "Vespertino",
-                        'dedicación' => $datos[7],
-                        'grado académico' => $datos[8],
-                        'jerarquía' => $datos[9],
-                        'cargo' => $datos[10]
+                        'contrato' => $datos[8],
+                        'jornada' => $jornada,
+                        'dedicación' => $datos[11],
+                        'grado académico' => $datos[12],
+                        'jerarquía' => $datos[13],
+                        'cargo' => $datos[14]
                     ];
                 }
             }
         }
 
         # Tabla Administrativo
+        /* Se considera administrativo solo a los que tengan un cargo */
+
         $administrativo = [];
         foreach ($this->array2 as $key => $value) {
             foreach ($value as $subKey => $subValue) {
                 $datos = explode(";", $subValue);
-                if (isset($datos[0], $datos[1], $datos[10])) {
+                if (isset($datos[0], $datos[1], $datos[10]) && $datos[10] != "") {
                     $administrativo[$datos[0]] = [
                         'RUN' => $datos[0],
                         'DV' => $datos[1],
@@ -266,7 +296,14 @@ class Bananer
         foreach ($this->array1 as $key => $value) {
             foreach ($value as $subKey => $subValue) {
                 $datos = explode(";", $subValue);
-                if (isset($datos[4], $datos[10], $datos[14], $datos[13], $datos[18], $datos[19])) {
+                if (isset(
+                    $datos[4],
+                    $datos[10],
+                    $datos[14],
+                    $datos[13],
+                    $datos[18],
+                    $datos[19]
+                )) {
                     $notas[] = [
                         'RUN' => $datos[4],
                         'Número de estudiante' => $datos[10],
@@ -362,9 +399,10 @@ class Bananer
             
             Nota: Ambas cosas solo se pueden calcular con calificaciones no nulas,
             es decir que no sean iguales a "x", cabe destacar que en notas
-            el vacio se deja como "", dado que acepta nulos, por lo que para ese caso debe ser distinto de "",
-            en el caso de la calificación se deja como "x" dado que no acepta nulos, entonces
-            para ese caso debe ser distinto de "x".
+            el vacio se deja como "", dado que acepta nulos, por lo que para ese caso 
+            debe ser distinto de "", en el caso de la calificación 
+            se deja como "x" dado que no acepta nulos, 
+            entonces para ese caso debe ser distinto de "x".
             
             Nota 2: El archivo notas tiene estas columnas:
             RUN,"Número de estudiante","sigla curso","Periodo curso",Calificación,Nota */

@@ -1,0 +1,206 @@
+% Plantilla para documentos LaTeX para enunciados
+% Por Pedro Pablo Aste Kompen - ppaste@uc.cl
+% Licencia Creative Commons BY-NC-SA 3.0
+% http://creativecommons.org/licenses/by-nc-sa/3.0/
+
+\documentclass[12pt]{article}
+
+% Margen de 1 pulgada por lado
+\usepackage{fullpage}
+% Incluye gráficas
+\usepackage{graphicx}
+% Packages para matemáticas, por la American Mathematical Society
+\usepackage{amssymb}
+\usepackage{amsmath}
+% Desactivar hyphenation
+\usepackage[none]{hyphenat}
+% Saltar entre párrafos - sin sangrías
+\usepackage{parskip}
+% Español y UTF-8
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+% Links en el documento
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\setlength{\headheight}{15.2pt}
+\setlength{\headsep}{5pt}
+\pagestyle{fancy}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Exp}[1]{\mathcal{E}_{#1}}
+\newcommand{\List}[1]{\mathcal{L}_{#1}}
+\newcommand{\EN}{\Exp{\N}}
+\newcommand{\LN}{\List{\N}}
+
+\newcommand{\comment}[1]{}
+\newcommand{\lb}{\\~\\}
+\newcommand{\eop}{_{\square}}
+\newcommand{\hsig}{\hat{\sigma}}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\lra}{\leftrightarrow}
+
+% Cambiar por nombre completo + número de alumno
+\newcommand{\alumno}{Victor Ruiz - 2320012J}
+\rhead{Entrega 1 - \alumno}
+
+\begin{document}
+\thispagestyle{empty}
+% Membrete
+% PUC-ING-DCC-IIC1103
+\begin{minipage}{2.3cm}
+\includegraphics[width=2cm]{img/logo.pdf}
+\vspace{0.5cm} % Altura de la corona del logo, así el texto queda alineado verticalmente con el círculo del logo.
+\end{minipage}
+\begin{minipage}{\linewidth}
+\textsc{\raggedright \footnotesize
+Pontificia Universidad Católica de Chile \\
+Departamento de Ciencia de la Computación \\
+IIC2413 - Matemáticas Discretas \\}
+\end{minipage}
+
+
+% Titulo
+\begin{center}
+\vspace{0.5cm}
+{\huge\bf Tarea 1}\\
+\vspace{0.2cm}
+\today\\
+\vspace{0.2cm}
+\footnotesize{2º semestre 2024 - Profesores Eduardo Bustos  - Christian Alvarez}\\
+\vspace{0.2cm}
+\footnotesize{\alumno}
+\rule{\textwidth}{0.05mm}
+\end{center}
+
+
+
+\section*{Análisis de los datos}
+% Descripción de los datos (tipos) encontrados en Archivo1.csv y Archivo2.csv
+\subsection*{Descripción de los datos}
+Los datos de los archivos \texttt{Archivo1.csv} y \texttt{Archivo2.csv} corresponden a 
+datos referentes a la base de datos de una Universidad con sus cursos, alumnos, profesores, notas, etc.
+
+% Archivo1.csv: Cohorte;Código Plan;Plan;Bloqueo;RUN;DV;Nombres;Apellido Paterno;Apellido Materno;Nombre Completo;Número estudiante;Mail Personal;Mail Institucional;Periodo curso;Sigla curso;Asignatura;Sección;Nivel;Calificación;Nota;Último Logro;Fecha Logro;Última Carga
+
+% Cohorte: string, Per´ıodo de ingreso o re-ingreso del estudiante, no nulo
+% C´odigo Plan: string, C´odigo del plan de estudios, no nulo
+% Plan: string, Nombre del plan de estudios, no nulo
+% Bloqueo: Boolean, Indica si el estudiante tiene alguna restricci´on (deuda), no nulo
+% RUN del estudiante: int, Rol ´Unico Nacional, no nulo
+% DV del estudiante: char, D´ıgito verificador del RUN, no nulo
+% Nombres: string, todos los nombres propios, no nulo
+% Apellido Paterno: string, Apellido Paterno, no nulo
+% Apellido Materno: string, Apellido Materno, admite nulos
+% Nombre completo: string, Nombres + Apellido Paterno+Apellido Materno, no nulo
+% N´umero de estudiante: int, identifica en forma ´unica a un estudiante y su plan de estudio, no nulo
+% mail personal: string, Correo electr´onico personal, admite nulos
+% mail institucional: string, Correo electr´onico institucional @lamejor.cl, admite nulos
+% Periodo curso: string, periodo en que se curs´o o est´a cursando la asignatura, no nulo
+% sigla curso: string, c´odigo que identifica a una asignatura, no nulo
+% curso: string nombre de la asignatura, no nulo
+% Secci´on: secci´on de la asignatura, no nulo
+% Nivel del curso: semestre al que pertenece la asignatura en la malla, no nulo
+% Calificaci´on: string, resultado conceptual de la evaluaci´on obtenida, no nulo
+% Nota: float 1.0 a 7.0 o vac´ıo, resultado num´erico de la evaluaci´on obtenida, puede contener nulo
+% ´Ultimo logro: Nivel del curso m´as atrasado aprobado por el estudiante, no nulo
+% Fecha Logro: string, per´ıodo en que se obtuvo el ´Ultimo logro, no nulo
+% ´Ultima toma de ramos: Per´ıodo de la ´ultima inscripci´on de asignaturas, no nulo
+
+% Archivo2.csv: RUN;DV;PATERNO;MATERNO;NOMBRES:;MAIL PERSONAL;MAIL INSTITUCIONAL;TELÉFONO;CONTRATO;JORNADA DIURNO;JORNADA VESPERTINO;DEDICACIÓN;GRADO ACADÉMICO;JERARQUÍA;CARGO
+
+% RUN del profesor/administrativo: int, Rol ´Unico Nacional, no nulo
+% DV del profesor/administrativo: char, D´ıgito verificador del RUN, no nulo
+% mail personal: string, Correo electr´onico personal, admite nulos
+% mail institucional: string, Correo electr´onico institucional @lamejor.cl, admite nulos
+% tel´efono: int de 9 d´ıgitos, tel´efono personal, admite nulos
+% contrato: string, tipo de contrato (fuul, part-time, hora, etc.), admite nulos
+% jornada diurna: string, ”DIURNO”, admite nulos
+% jornada vespertina: string, ”vespertino”, admite nulos
+% dedicaci´on: string, horas del contrato, admite nulos
+% grado acad´emico:string, grado acad´emico ”Bachiller”, ”Licenciado”, ”Doctor”, admite nulos
+% jerarquia: String, jerarqu´ıa acad´emica, admite nulos
+% cargo: string, cargo administrativo, admite nulos
+
+\begin{itemize}
+    \item \texttt{Archivo1.csv}:
+    \begin{itemize}
+        \item \texttt{Cohorte}: string, Período de ingreso o re-ingreso del estudiante, no nulo
+        \item \texttt{Código Plan}: string, Código del plan de estudios, no nulo
+        \item \texttt{Plan}: string, Nombre del plan de estudios, no nulo
+        \item \texttt{Bloqueo}: Boolean, Indica si el estudiante tiene alguna restricción (deuda), no nulo
+        \item \texttt{RUN del estudiante}: int, Rol Único Nacional, no nulo
+        \item \texttt{DV del estudiante}: char, Dígito verificador del RUN, no nulo
+        \item \texttt{Nombres}: string, todos los nombres propios, no nulo
+        \item \texttt{Apellido Paterno}: string, Apellido Paterno, no nulo
+        \item \texttt{Apellido Materno}: string, Apellido Materno, admite nulos
+        \item \texttt{Nombre completo}: string, Nombres + Apellido Paterno+Apellido Materno, no nulo
+        \item \texttt{Número de estudiante}: int, identifica en forma única a un estudiante y su plan de estudio, no nulo
+        \item \texttt{mail personal}: string, Correo electrónico personal, admite nulos
+        \item \texttt{mail institucional}: string, Correo electrónico institucional @lamejor.cl, admite nulos
+        \item \texttt{Periodo curso}: string, periodo en que se cursó o está cursando la asignatura, no nulo
+        \item \texttt{sigla curso}: string, código que identifica a una asignatura, no nulo
+        \item \texttt{curso}: string nombre de la asignatura, no nulo
+        \item \texttt{Sección}: sección de la asignatura, no nulo
+        \item \texttt{Nivel del curso}: semestre al que pertenece la asignatura en la malla, no nulo
+        \item \texttt{Calificación}: string, resultado conceptual de la evaluación obtenida, no nulo
+        \item \texttt{Nota}: float 1.0 a 7.0 o vacío, resultado numérico de la evaluación obtenida, puede contener nulo
+        \item \texttt{Último logro}: Nivel del curso más atrasado aprobado por el estudiante, no nulo
+        \item \texttt{Fecha Logro}: string, período en que se obtuvo el Último logro, no nulo
+        \item \texttt{Última toma de ramos}: Período de la última inscripción de asignaturas, no nulo
+    \end{itemize}
+    \item \texttt{Archivo2.csv}:
+    \item \texttt{RUN del profesor/administrativo}: int, Rol Único Nacional, no nulo
+    \item \texttt{DV del profesor/administrativo}: char, Dígito verificador del RUN, no nulo
+    \item \texttt{mail personal}: string, Correo electrónico personal, admite nulos
+    \item \texttt{mail institucional}: string, Correo electrónico institucional @lamejor.cl, admite nulos
+    \item \texttt{teléfono}: int de 9 dígitos, teléfono personal, admite nulos
+    \item \texttt{contrato}: Permite diferneciar entre profesores y el resto de personas.
+    \item \texttt{jornada diurna}: string, ”DIURNO”, admite nulos
+    \item \texttt{jornada vespertina}: string, ”vespertino”, admite nulos
+    \item \texttt{dedicación}: string, horas del contrato, admite nulos
+    \item \texttt{grado académico}:string, grado académico ”Bachiller”, ”Licenciado”, ”Doctor”, admite nulos
+    \item \texttt{jerarquía}: String, jerarquía académica, admite nulos
+    \item \texttt{cargo}: Permite disitnguir entre profesores y administrativos.
+\end{itemize}
+\newpage
+\subsection*{}
+\section*{Tipos de errores de datos detectados por el programa}
+Se dividen en 2 grandes casos:
+
+\begin{itemize}
+    \item \texttt{Problemas de carácteres}: Se detectan problemas en los carácteres especiales.
+    \item \texttt{Traspaso de datos}: Se detectan problemas en los datos originales, dado que algunos datos que deberían ser numéricos, son strings.
+\end{itemize}
+
+Además, no se considera problema, pero se dectectan todos los espacios en vacio: \texttt{''}. Para solucionar esto, se 
+reemplazarán por \texttt{'x'}, cuando no se admitan nulos en los campos, y por \texttt{''} cuando se admitan nulos.
+
+
+\subsection*{Forma de solución utilizada}
+
+Para solucionar los problemas de carácteres, se creo el metódo privado de la clase \texttt{Bananer} del módulo \texttt{Bananer.php}	
+llamado \texttt{reemplazarCaracteresEspeciales}, el cual recibe el array de datos y reemplaza los carácteres especiales por los pedidos. 
+
+Para solucionar los problemas de traspaso de datos, se creó el metódo publico0 de la clase \texttt{Bananer} del módulo 
+\texttt{Bananer.php} llamado \texttt{deteccionArray}, el cual recibe el array de datos y reemplaza los datos que deberían ser numéricos, pero son strings, por su respectivo valor numérico.
+
+\section*{Nombre de los archivos de salida y explicación de su contenido}
+% Los archivos de salida son: $tablas = ['persona.csv', 'cursos.csv', 'profesor.csv', 'administrativo.csv', 'notas.csv', 'estudiante.csv']$
+
+\begin{itemize}
+    \item \texttt{persona.csv}: Contiene los datos de los estudiantes y profesores, con los campos \texttt{RUN, DV, Nombres, "Apellido Paterno", "Apellido Materno", "Nombre completo", Teléfono, "mail personal", "mail institucional"}.
+    \item \texttt{cursos.csv}: Contiene los datos de los cursos, con los campos \texttt{"sigla curso", curso, Secciones, "Nivel del curso"}.
+    \item \texttt{profesor.csv}: Contiene los datos de los profesores, con los campos \texttt{RUN, DV, contrato, jornada, dedicación, "grado académico", jerarquía, cargo}.
+    \item \texttt{administrativo.csv}: Contiene los datos de los administrativos, con los campos \texttt{RUN, DV, cargo}.
+    \item \texttt{notas.csv}: Contiene los datos de las notas, con los campos \texttt{RUN,"Número de estudiante", "sigla curso", "Periodo curso", Calificación, Nota}.
+    \item \texttt{estudiante.csv}: Contiene los datos de los estudiantes, con los campos \texttt{Cohorte, "Número de estudiante", Código Plan, "Último Logro", "Fecha Logro", "Última toma de ramos}.
+\end{itemize}
+
+\section*{Ejecución del programa}
+
+Para ejecutar el programa, se debe correr el archivo \texttt{main.php} con el comando \texttt{php main.php}.
+Luego, se crearan en el directorio actual los archivos \texttt{persona.csv, cursos.csv, profesor.csv, administrativo.csv, notas.csv, estudiante.csv}.
+Después, el programa preguntará por cual consulta realizar, y se debe ingresar el número de la consulta deseada. \texttt{1 o 2}.
+Finalmente, se mostrará el resultado de la consulta en consola.
+% Fin del documento
+\end{document}
