@@ -1,6 +1,7 @@
 <?php
-/* Este codigo es Bananer, una aplicación ejectuable por consola
-que leera los datos desde los archivos CSV entregados */
+/* Este codigo es Bananer un modúlo php que contendra
+la clase Bananer la cual realizara los distintos trabajos
+especificados en el enunciado por sus metodos */
 
 class Bananer
 {
