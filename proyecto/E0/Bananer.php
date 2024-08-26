@@ -162,6 +162,9 @@ class Bananer
         como matrices PHP, las cuales no admiten valores repetidos. */
 
         # Tabla Persona
+
+        /* Accedemos a archivo 1 para obtener la mayoria de datos de la persona
+        y accedemos a archivo 2 para obtener el telefono */
         $persona = [];
         foreach ($this->array1 as $key => $value) {
             foreach ($value as $subKey => $subValue) {
@@ -174,8 +177,7 @@ class Bananer
                     $datos[8],
                     $datos[9],
                     $datos[11],
-                    $datos[12],
-                    $datos[13]
+                    $datos[12]
                 )) {
                     $persona[$datos[4]] = [
                         'RUN' => $datos[4],
@@ -184,10 +186,19 @@ class Bananer
                         'Apellido Paterno' => $datos[7],
                         'Apellido Materno' => $datos[8],
                         'Nombre completo' => $datos[9],
-                        'Teléfono' => $datos[11],
-                        'mail personal' => $datos[12],
-                        'mail institucional' => $datos[13]
+                        'Teléfono' => "",
+                        'mail personal' => $datos[11],
+                        'mail institucional' => $datos[12]
                     ];
+                }
+            }
+        }
+
+        foreach ($this->array2 as $key => $value) {
+            foreach ($value as $subKey => $subValue) {
+                $datos = explode(";", $subValue);
+                if (isset($datos[0], $datos[7])) {
+                    $persona[$datos[0]]['Teléfono'] = $datos[7];
                 }
             }
         }
@@ -315,6 +326,9 @@ class Bananer
                 }
             }
         }
+
+        # Revisar lineas repetidas en Notas y borrarlas para dejar solo una
+        $notas = array_map("unserialize", array_unique(array_map("serialize", $notas)));
 
         # Crear y escribir en archivos CSV
         $this->escribirCSV('persona.csv', $persona);
