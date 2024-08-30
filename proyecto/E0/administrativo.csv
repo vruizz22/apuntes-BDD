@@ -1,60 +1,55 @@
 RUN,DV,cargo
-15602671,1,vespertino
-7523733,6,vespertino
-21531369,0,vespertino
-19395783,0,vespertino
-14076589,9,vespertino
-5209083,0,vespertino
-21937717,0,vespertino
-16183736,9,vespertino
-5777395,5,vespertino
-7739323,9,vespertino
-11181112,1,vespertino
-4883169,8,vespertino
-7072240,3,vespertino
-9323699,5,vespertino
-22101209,8,vespertino
-10932457,4,vespertino
-8176564,4,vespertino
-20329037,1,vespertino
-19357400,0,vespertino
-6178078,3,vespertino
-7977957,4,vespertino
-11216997,8,vespertino
-5087164,8,vespertino
-21291470,4,vespertino
-5428536,6,vespertino
-18868982,3,vespertino
-14515176,4,vespertino
-16611891,7,vespertino
-11678529,0,vespertino
-6369943,3,vespertino
-7392992,7,vespertino
-21122698,8,vespertino
-16295219,9,vespertino
-18011748,8,vespertino
-17495734,2,vespertino
-11985627,0,vespertino
-10223426,6,vespertino
-16559195,8,vespertino
-21437179,0,vespertino
-8112732,k,vespertino
-17072598,4,vespertino
-20803733,3,vespertino
-6195466,9,vespertino
-3824847,1,vespertino
-6129243,0,vespertino
-9071125,3,vespertino
-3971624,K,vespertino
-8220024,6,vespertino
-12881699,K,vespertino
-9619937,9,vespertino
-20034372,8,vespertino
-13045184,2,vespertino
-6196352,K,vespertino
-21387934,3,vespertino
-16576301,5,vespertino
-12138847,1,vespertino
-9796644,6,vespertino
-12647518,7,vespertino
-9461004,9,vespertino
+15602671,1,"Director (a) Formación Cont. y Postgra"
+21531369,0,"Secretaria Estudios"
+19887007,3,"Profesor por Jornada"
+14076589,9,"Académico Investigador"
+5209083,0,Profesor
+8524557,5,"Profesor por Jornada"
+5885015,8,"Académico Investigador"
+4883169,8,"Director Inst. Investigación y Postgra"
+18025510,6,"Profesor por Jornada"
+3880934,0,"Profesor por Jornada"
+22101209,8,"Profesor por Jornada"
+10932457,4,"Académico Investigador"
+21817540,K,"Académico Investigador"
+9142516,0,"Profesor por Jornada"
+17529494,7,"Coordinador Docente y Formación Contin"
+19357400,0,"Director(a) Carrera"
+17266312,3,"Académico Investigador"
+7977957,4,"Profesor por Jornada"
+11216997,8,"Director(a) Carrera"
+20207255,8,"Profesor por Jornada"
+5721194,7,"Profesor por Jornada"
+8465509,5,"Profesor por Jornada"
+15831810,3,"Director (a) Centro de Sol. Colab.de C"
+19819656,7,"Académico Investigador"
+6961556,4,"Profesor por Jornada"
+13563385,1,"Profesor 1/2 Jornada"
+16938644,2,"Académico Investigador"
+14515176,4,"Coord. de Seguimiento y Apoyo al Egres"
+10496689,2,"Secretaria Ejecutiva del Centro ..."
+6888020,7,"Profesor por Jornada"
+15066943,2,"Académico Investigador"
+6369943,3,"Director del  Área"
+7392992,7,"Profesor por Jornada"
+11975989,3,"Director(a) Carrera (i)"
+18011748,8,"Director Depto. "
+11985627,0,Decano(a)
+18463474,0,"Director Clínica"
+17894730,8,"Director(a) Escuela"
+10954998,7,"Profesor 1/2 Jornada"
+5279196,9,"Profesor 1/2 Jornada"
+8112732,k,"Profesor por Jornada"
+6014931,8,"Coord. de Clínica "
+15314589,4,"Profesor 1/2 Jornada"
+9071125,3,"Académico Investigador"
+3971624,K,"Coordinador de Investigacion"
+12881699,K,"Profesor por Jornada"
+16535162,0,"Coordinador (a) Postgrados"
+21387934,3,"Profesor por Jornada"
+16576301,5,"Secretario(a) Estudios"
+10837577,9,"Director(a) Carrera (i)"
+18717911,K,"Profesor 1/2 Jornada"
+12138847,1,"Profesor por Jornada"
+15076521,1,"Director(a) Carrera"
+14712196,6,"Profesor por Jornada"

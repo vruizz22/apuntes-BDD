@@ -276,11 +276,11 @@ class Bananer
         foreach ($this->array2 as $key => $value) {
             foreach ($value as $subKey => $subValue) {
                 $datos = explode(";", $subValue);
-                if (isset($datos[0], $datos[1], $datos[10]) && $datos[10] != "") {
+                if (isset($datos[0], $datos[1], $datos[10]) && $datos[14] != "") {
                     $administrativo[$datos[0]] = [
                         'RUN' => $datos[0],
                         'DV' => $datos[1],
-                        'cargo' => $datos[10]
+                        'cargo' => $datos[14]
                     ];
                 }
             }
