@@ -117,7 +117,8 @@ Es la llave primaria, ya que por sí sola permite identificar y distinguir a cad
 Es la llave primaria, ya que por sí sola permite identificar y distinguir a cada plan de estudio individualmente.
 \subsection*{Oferta Académica(\underline{Periodo Oferta})}
 Es la llave primaria, ya que por sí sola permite identificar y distinguir a cada oferta académica individualmente.
-\vspace*{0.5cm}
+\subsection*{Prerrequisito(\underline{Ciclo}, \underline{Curso Restricción})}
+Ambas forman una llave parcial, ya que no son suficientes para identificar de manera única a un prerrequisito, sin embargo, en conjunto con las llaves externas (Curso.Sigla Curso, Curso.Sección) permiten identificar de manera única a cada prerrequisito.
 \section*{Llaves Compuestas}
 \subsection*{Prerrequisito(\underline{Curso.Sigla Curso}, \underline{Curso.Sección}, \underline{Ciclo}, \underline{Curso Restricción})}
 Es una llave compuesta, pues requiere tanto de las llaves de Curso para conocer e identificar claramente 
