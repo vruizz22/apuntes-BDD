@@ -50,22 +50,20 @@ class Cargador
             DV varchar(2) NOT NULL,
             Nombres varchar(100) NOT NULL,
             Apellidos varchar(100) NOT NULL,
-            Correos varchar(100) NOT NULL,
-            Telefonos varchar(100) NOT NULL,
+            Correos varchar(100),
+            Telefonos varchar(100),
             PRIMARY KEY (RUN, DV)
         )";
 
         $Estudiantes = "CREATE TABLE Estudiantes(
             RUN int NOT NULL,
             DV varchar(2) NOT NULL,
-            Causal_de_bloqueo varchar(100),
+            Causal_de_bloqueo TEXT,
             Bloqueo varchar(1) NOT NULL,
             Numero_de_estudiante int NOT NULL,
             Cohorte varchar(100) NOT NULL,
-            Código_Plan varchar(100) UNIQUE NOT NULL,
             Nombre_Carrera varchar(100) NOT NULL,
             FOREIGN KEY (RUN, DV) REFERENCES Personas(RUN, DV),
-            FOREIGN KEY (Código_Plan) REFERENCES Planes_Estudio(Código_Plan),
             PRIMARY KEY (RUN, DV, Numero_de_estudiante)
         )";
 
@@ -363,23 +361,26 @@ class Cargador
                 e.DV,
                 CONCAT(e.Nombre_1, ' ', e.Nombre_2) AS Nombres,
                 CONCAT(e.Primer_Apellido, ' ', e.Segundo_Apellido) AS Apellidos,
-                '' AS Correos, -- Ajustar esto según los datos disponibles
-                '' AS Telefonos -- Ajustar esto según los datos disponibles
+                dp.Email_institucional AS Correos,
+                dp.Telefono AS Telefonos
             FROM TempEstudiantes e
+            LEFT JOIN TempDocentesPlanificados dp ON e.RUN = dp.RUN
+            WHERE e.RUN IS NOT NULL
             UNION
             SELECT DISTINCT
-                d.RUN,
-                d.DV,
-                d.Nombre AS Nombres,
-                d.Apellido_P AS Apellidos,
-                d.Email_institucional AS Correos,
-                d.Telefono AS Telefonos
-            FROM TempDocentesPlanificados d
+                dp.RUN,
+                dp.Nombre AS Nombres,
+                dp.Apellido_P AS Apellidos,
+                dp.Email_institucional AS Correos,
+                dp.Telefono AS Telefonos
+            FROM TempDocentesPlanificados dp
+            LEFT JOIN TempEstudiantes e ON dp.RUN = e.RUN
+            WHERE e.RUN IS NULL AND dp.RUN IS NOT NULL
         ";
         $this->InsertarDatosFinales($query, 'Personas');
 
         // Insertar datos en la tabla Estudiantes
-        $query = "INSERT INTO Estudiantes (RUN, DV, Causal_de_bloqueo, Bloqueo, Numero_de_estudiante, Cohorte, Código_Plan, Nombre_Carrera)
+        $query = "INSERT INTO Estudiantes (RUN, DV, Causal_de_bloqueo, Bloqueo, Numero_de_estudiante, Cohorte, Nombre_Carrera)
             SELECT
                 e.RUN,
                 e.DV,
@@ -387,7 +388,6 @@ class Cargador
                 e.Bloqueo,
                 e.Numero_de_alumno,
                 e.Cohorte,
-                e.Codigo_Plan,
                 e.Carrera
             FROM TempEstudiantes e
         ";
@@ -397,13 +397,15 @@ class Cargador
         $query = "INSERT INTO Academicos (RUN, DV, Estamento, Grado_academico, Contrato, Jerarquia, Jornada)
             SELECT
                 d.RUN,
-                d.DV,
+                e.DV,
                 d.Estamento,
                 d.Grado_academico,
                 d.Contrato,
                 d.Jerarquia,
                 d.Jornada
             FROM TempDocentesPlanificados d
+            JOIN TempEstudiantes e ON d.RUN = e.RUN
+            WHERE e.RUN IS NULL
         ";
         $this->InsertarDatosFinales($query, 'Academicos');
 
@@ -548,20 +550,20 @@ class Cargador
         $queries = [
             "CREATE TEMP TABLE TempAsignaturas (
                 Plan VARCHAR(100),
-                Asignatura_id VARCHAR(100),
-                Asignatura VARCHAR(100),
-                Nivel VARCHAR(100),
-                Prerequisito_ciclo VARCHAR(100)
+                Asignatura_id VARCHAR(100) NOT NULL,
+                Asignatura VARCHAR(100) NOT NULL,
+                Nivel VARCHAR(100) NOT NULL,
+                Ciclo VARCHAR(100)
             )",
             "CREATE TEMP TABLE TempPlaneacion (
-                Periodo VARCHAR(100),
-                Sede VARCHAR(100),
-                Facultad VARCHAR(100),
-                Codigo_Depto VARCHAR(100),
-                Departamento VARCHAR(100),
-                Id_Asignatura VARCHAR(100),
-                Asignatura VARCHAR(100),
-                Seccion VARCHAR(100),
+                Periodo VARCHAR(100) NOT NULL,
+                Sede VARCHAR(100) NOT NULL,
+                Facultad VARCHAR(100) NOT NULL,
+                Codigo_Depto VARCHAR(100) NOT NULL,
+                Departamento VARCHAR(100) NOT NULL,
+                Id_Asignatura VARCHAR(100) NOT NULL,
+                Asignatura VARCHAR(100) NOT NULL,
+                Seccion VARCHAR(100) NOT NULL,
                 Duracion VARCHAR(100),
                 Jornada VARCHAR(100),
                 Cupo INT,
