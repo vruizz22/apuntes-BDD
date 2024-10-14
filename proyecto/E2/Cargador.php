@@ -48,8 +48,10 @@ class Cargador
         $Personas = "CREATE TABLE Personas(
             RUN int NOT NULL,
             DV varchar(2) NOT NULL,
-            Nombres varchar(100) NOT NULL,
-            Apellidos varchar(100) NOT NULL,
+            Nombre_1 varchar(100) NOT NULL,
+            Nombre_2 varchar(100),
+            Apellido_1 varchar(100) NOT NULL,
+            Apellido_2 varchar(100),
             Correos varchar(100),
             Telefonos varchar(100),
             PRIMARY KEY (RUN, DV)
@@ -63,7 +65,7 @@ class Cargador
             Numero_de_estudiante int NOT NULL,
             Cohorte varchar(100) NOT NULL,
             Nombre_Carrera varchar(100) NOT NULL,
-            FOREIGN KEY (RUN, DV) REFERENCES Personas(RUN, DV),
+            FOREIGN KEY (RUN, DV) REFERENCES Personas(RUN, DV),                                                         
             PRIMARY KEY (RUN, DV, Numero_de_estudiante)
         )";
 
@@ -93,47 +95,51 @@ class Cargador
         $Cursos = "CREATE TABLE Cursos(
             Sigla_curso varchar(100) NOT NULL,
             Seccion_curso int NOT NULL,
+            Periodo_curso varchar(100) NOT NULL,
             Nombre varchar(100) NOT NULL,
             Nivel int NOT NULL,
             Ciclo varchar(100),
             Tipo varchar(100),
             Oportunidad varchar(3),
-            Duración varchar(1),
+            Duración varchar(1) NOT NULL,
             Nombre_Departamento varchar(100) NOT NULL,
             Código_Departamento varchar(100) NOT NULL,
-            FOREIGN KEY (Nombre_Departamento, Código_Departamento) 
-            REFERENCES Departamento(Nombre, Código),
-            PRIMARY KEY (Sigla_curso, Seccion_curso)
+            RUN_Academico int,
+            DV_Academico varchar(2),
+            Nombre_Academico varchar(100) DEFAULT 'POR DESIGNAR',
+            Apellido1_Academico varchar(100),
+            Apellido2_Academico varchar(100),
+            Principal varchar(1),
+            FOREIGN KEY (Nombre_Departamento, Código_Departamento) REFERENCES Departamento(Nombre, Código),
+            FOREIGN KEY (RUN_Academico, DV_Academico) REFERENCES Academicos(RUN, DV),
+            PRIMARY KEY (Sigla_curso, Seccion_curso, Periodo_curso)
         )";
 
         $Cursos_Equivalencias = "CREATE TABLE Cursos_Equivalencias(
             Sigla_curso varchar(100) NOT NULL,
-            Seccion_curso int NOT NULL,
-            Sigla_equivalente varchar(100) NOT NULL,
+            Sigla_equivalente int NOT NULL,
             Ciclo varchar(100),
-            PRIMARY KEY (Sigla_curso, Seccion_curso, Sigla_equivalente),
-            FOREIGN KEY (Sigla_curso, Seccion_curso) REFERENCES Cursos(Sigla_curso, Seccion_curso)
+            PRIMARY KEY (Sigla_curso, Sigla_equivalente),
+            FOREIGN KEY (Sigla_curso) REFERENCES Cursos(Sigla_curso)
         )";
 
         $Cursos_Prerequisitos = "CREATE TABLE Cursos_Prerequisitos(
             Sigla_curso varchar(100) NOT NULL,
-            Seccion_curso int NOT NULL,
-            Sigla_prerequisito varchar(100) NOT NULL,
+            Sigla_prerequisito int NOT NULL,
             Ciclo varchar(100),
-            PRIMARY KEY (Sigla_curso, Seccion_curso, Sigla_prerequisito),
-            FOREIGN KEY (Sigla_curso, Seccion_curso) REFERENCES Cursos(Sigla_curso, Seccion_curso)
+            PRIMARY KEY (Sigla_curso, Sigla_prerequisito),
+            FOREIGN KEY (Sigla_curso) REFERENCES Cursos(Sigla_curso)
         )";
 
         $Cursos_Minimos = "CREATE TABLE Cursos_Minimos(
             Sigla_curso varchar(100) NOT NULL,
-            Seccion_curso int NOT NULL,
-            Sigla_minimo varchar(100) NOT NULL,
+            Sigla_minimo int NOT NULL,
             Ciclo varchar(100),
             Nombre varchar(100),
             Tipo varchar(100),
             Nivel float,
-            PRIMARY KEY (Sigla_curso, Seccion_curso, Sigla_minimo),
-            FOREIGN KEY (Sigla_curso, Seccion_curso) REFERENCES Cursos(Sigla_curso, Seccion_curso)
+            PRIMARY KEY (Sigla_curso, Sigla_minimo),
+            FOREIGN KEY (Sigla_curso) REFERENCES Cursos(Sigla_curso)
         )";
 
         $Planes_Estudio = "CREATE TABLE Planes_Estudio(
@@ -152,9 +158,6 @@ class Cargador
             Sigla_curso varchar(100) NOT NULL,
             Seccion_curso int NOT NULL,
             Código_Plan varchar(100) NOT NULL,
-            RUN int NOT NULL,
-            DV varchar(2) NOT NULL,
-            Numero_de_estudiante int NOT NULL,
             Periodo_Oferta varchar(100) NOT NULL,
             Cupos int NOT NULL,
             Sala varchar(100) NOT NULL,
@@ -162,12 +165,10 @@ class Cargador
             Hora_Fin TIME NOT NULL,
             Fecha_Inicio DATE NOT NULL,
             Fecha_Fin DATE NOT NULL,
-            Modulo_Horario varchar(100) NOT NULL,
             Inscritos int NOT NULL,
-            PRIMARY KEY (Sigla_curso, Seccion_curso, Código_Plan, RUN, DV, Numero_de_estudiante, Periodo_Oferta),
-            FOREIGN KEY (Sigla_curso, Seccion_curso) REFERENCES Cursos(Sigla_curso, Seccion_curso),
-            FOREIGN KEY (Código_Plan) REFERENCES Planes_Estudio(Código_Plan),
-            FOREIGN KEY (RUN, DV, Numero_de_estudiante) REFERENCES Estudiantes(RUN,DV, Numero_de_estudiante)
+            PRIMARY KEY (Sigla_curso, Seccion_curso, Código_Plan, Periodo_Oferta),
+            FOREIGN KEY (Sigla_curso, Seccion_curso, Periodo_Oferta) REFERENCES Nota(Sigla_curso, Seccion_curso, Periodo_Curso),
+            FOREIGN KEY (Código_Plan) REFERENCES Planes_Estudio(Código_Plan)
         )";
 
         $Departamento = "CREATE TABLE Departamento(
@@ -180,6 +181,7 @@ class Cargador
         $Nota = "CREATE TABLE Nota(
             Sigla_curso varchar(100) NOT NULL,
             Seccion_curso int NOT NULL,
+            Periodo_curso varchar(100) NOT NULL,
             Numero_de_estudiante int NOT NULL,
             RUN int NOT NULL,
             DV varchar(2) NOT NULL,
@@ -187,24 +189,27 @@ class Cargador
             Descripción varchar(100),
             Resultado varchar(100),
             Calificación varchar(100),
-            PRIMARY KEY (Sigla_curso, Seccion_curso, RUN, DV, Numero_de_estudiante),
-            FOREIGN KEY (Sigla_curso, Seccion_curso) REFERENCES Cursos(Sigla_curso, Seccion_curso),
+            PRIMARY KEY (Sigla_curso, Seccion_curso, Periodo_curso, RUN, DV, Numero_de_estudiante),
+            FOREIGN KEY (Sigla_curso, Seccion_curso, Periodo_curso) REFERECES Cursos(Sigla_curso, Seccion_curso, Periodo_curso),
             FOREIGN KEY (RUN, DV, Numero_de_estudiante) REFERENCES Estudiantes(RUN, DV, Numero_de_estudiante)
         )";
 
         $Avance_Academico = "CREATE TABLE Avance_Academico(
             Sigla_curso varchar(100) NOT NULL,
             Seccion_curso int NOT NULL,
+            Periodo_curso varchar(100) NOT NULL,
             RUN int NOT NULL,
             DV varchar(2) NOT NULL,
             Numero_de_estudiante int NOT NULL,
             Periodo_Oferta varchar(100) NOT NULL,
             Nota float,
-            Descripción varchar(100) NOT NULL,
+            Descripción varchar(100),
+            Resultado varchar(100),
+            Calificación varchar(100),
             Ultima_Carga varchar(100),
             Ultimo_Logro varchar(100) NOT NULL,
-            PRIMARY KEY (Sigla_curso, Seccion_curso, RUN, DV, Numero_de_estudiante, Ultimo_Logro),
-            FOREIGN KEY (Sigla_curso, Seccion_curso) REFERENCES Cursos(Sigla_curso, Seccion_curso),
+            PRIMARY KEY (Sigla_curso, Seccion_curso, Periodo_curso, RUN, DV, Numero_de_estudiante, Ultimo_Logro),
+            FOREIGN KEY (Sigla_curso, Seccion_curso, Periodo_curso) REFERENCES Cursos(Sigla_curso, Seccion_curso, Periodo_curso),
             FOREIGN KEY (RUN, DV, Numero_de_estudiante) REFERENCES Estudiantes(RUN, DV, Numero_de_estudiante)
         )";
 
@@ -234,91 +239,12 @@ class Cargador
             }
         }
 
-        // Crear la función para actualizar la tabla Nota
-        $funcion_actualizar_nota = "CREATE OR REPLACE FUNCTION actualizar_nota()
-        RETURNS TRIGGER AS $$
-        BEGIN
-            IF NEW.Calificación IS NULL THEN
-                NEW.Resultado := 'Curso Vigente en el período académico';
-                NEW.Descripción := 'curso vigente';
-            ELSIF NEW.Calificación = 'P' THEN
-                NEW.Resultado := 'Nota Pendiente';
-                NEW.Descripción := 'Curso incompleto';
-            ELSIF NEW.Calificación = 'NP' THEN
-                NEW.Resultado := 'No se Presenta';
-                NEW.Descripción := 'Reprobatorio';
-            ELSIF NEW.Calificación = 'EX' THEN
-                NEW.Resultado := 'Eximido';
-                NEW.Descripción := 'Aprobatorio';
-            ELSIF NEW.Calificación = 'A' THEN
-                NEW.Resultado := 'Aprobado';
-                NEW.Descripción := 'Aprobatorio';
-            ELSIF NEW.Calificación = 'R' THEN
-                NEW.Resultado := 'Reprobado';
-                NEW.Descripción := 'Reprobatorio';
-            ELSIF NEW.Calificación = 'SO' THEN
-                NEW.Resultado := 'Sobresaliente';
-                NEW.Descripción := 'Aprobatorio';
-            ELSIF NEW.Calificación = 'MB' THEN
-                NEW.Resultado := 'Muy Bueno';
-                NEW.Descripción := 'Aprobatorio';
-            ELSIF NEW.Calificación = 'B' THEN
-                NEW.Resultado := 'Bueno';
-                NEW.Descripción := 'Aprobatorio';
-            ELSIF NEW.Calificación = 'SU' THEN
-                NEW.Resultado := 'Suficiente';
-                NEW.Descripción := 'Aprobatorio';
-            ELSIF NEW.Calificación = 'I' THEN
-                NEW.Resultado := 'Insuficiente';
-                NEW.Descripción := 'Reprobatorio';
-            ELSIF NEW.Calificación = 'M' THEN
-                NEW.Resultado := 'Malo';
-                NEW.Descripción := 'Reprobatorio';
-            END IF;
-            RETURN NEW;
-        END;
-        $$ LANGUAGE plpgsql;";
-
-        $result = pg_query($this->conn, $funcion_actualizar_nota);
-        if (!$result) {
-            die("Error en la creación de la función: " . pg_last_error());
-        }
-
-        // Crear el trigger para la tabla Nota
-        $trigger_actualizar_nota = "CREATE TRIGGER trigger_actualizar_nota
-        BEFORE INSERT OR UPDATE ON Nota
-        FOR EACH ROW
-        EXECUTE FUNCTION actualizar_nota();";
-
-        $result = pg_query($this->conn, $trigger_actualizar_nota);
-        if (!$result) {
-            die("Error en la creación del trigger: " . pg_last_error());
-        }
+        // Creamos todos los triggers
+        $this->CrearTriggers();
     }
 
     public function CargarDatos()
     {
-        // Obtenemos los datos de las tablas
-
-        /* Se tienen los csv: Asignaturas, Docentes_planificados
-        Estudiantes, Notas, Planeacion, Planes, Prerequisitos, Planes_Magia, Planes_Hechiceria
-        Malla_Hechiceria, Malla_Magia. 
-
-        Columnas Asignaturas: Plan,Asignatura id,Asignatura,Nivel,Prerequisito
-        Columnas Docentes_planificados: RUN,Nombre,Apellido P,telefono,email personal,email  institucional,DEDICACIÓN,CONTRATO,DIURNO,VESPERTINO,SEDE,CARRERA,GRADO ACADÉMICO,JERARQUÍA ,CARGO,ESTAMENTO
-        Columnas Estudiantes: Código Plan,Carrera,Cohorte,Número de alumno,Bloqueo,Causal Bloqueo,RUN,DV,Nombre_1,Nombre_2,Primer Apellido,Segundo Apellido,Logro,Fecha Logro,Última Carga
-        Columas Notas: Código Plan,Plan,Cohorte,Sede,RUN,DV,Nombres,Apellido Paterno,Apellido Materno,Número de alumno,Periodo Asignatura,Código Asignatura,Asignatura,Convocatoria,Calificación,Nota
-        Columnas Planeación: Periodo,Sede,Facultad  ,Código Depto,Departamento,Id Asignatura,Asignatura,Sección,Duración,Jornada,Cupo,Inscritos,Día,Hora Inicio,Hora Fin,Fecha Inicio,Fecha Fin,Lugar,Edificio,Profesor Principal,RUN,Nombre Docente,1er Apellido Docente,2so Apellido Docente,Jerarquización
-        Columnas Planes: Código Plan,Facultad,Carrera,Plan,Jornada,Sede,Grado,Modalidad,Inicio Vigencia
-        Columnas Prerequisitos: Plan,Asignatura id,Asignatura,Nivel,Prerequisitos,Prerequisitos.1
-        Columnas Planes Magia: Planes Vigentes
-        Columnas Planes Hechiceria: Planes Vigentes
-        Columnas Malla Magia: 1,2,3,4,5,6,7,8,9,10 
-        Columnas Malla Hechiceria: 1,2,3,4,5,6,7,8,9,10 
-
-        Obtenemos los datos de los csv estrategicamente 
-        para insertar estos datos a las tablas anteriormente creadas */
-
         $nombre_archivos = array(
             'Asignaturas',
             'Docentes_planificados',
@@ -355,215 +281,272 @@ class Cargador
 
         // Insertar datos en las tablas finales
         // Insertar datos en la tabla Personas
-        $query = "INSERT INTO Personas (RUN, DV, Nombres, Apellidos, Correos, Telefonos)
+        $query = "INSERT INTO Personas (RUN, DV, Nombre_1, Nombre_2, Apellido_1, Apellido_2, Correos, Telefonos)
             SELECT DISTINCT
-                e.RUN,
-                e.DV,
-                CONCAT(e.Nombre_1, ' ', e.Nombre_2) AS Nombres,
-                CONCAT(e.Primer_Apellido, ' ', e.Segundo_Apellido) AS Apellidos,
-                dp.Email_institucional AS Correos,
-                dp.Telefono AS Telefonos
-            FROM TempEstudiantes e
-            LEFT JOIN TempDocentesPlanificados dp ON e.RUN = dp.RUN
-            WHERE e.RUN IS NOT NULL
-            UNION
-            SELECT DISTINCT
-                dp.RUN,
-                dp.Nombre AS Nombres,
-                dp.Apellido_P AS Apellidos,
-                dp.Email_institucional AS Correos,
-                dp.Telefono AS Telefonos
-            FROM TempDocentesPlanificados dp
-            LEFT JOIN TempEstudiantes e ON dp.RUN = e.RUN
-            WHERE e.RUN IS NULL AND dp.RUN IS NOT NULL
+                COALESCE(TempEstudiantes.RUN, TempDocentesPlanificados.RUN, TempNotas.RUN) AS RUN,
+                COALESCE(TempEstudiantes.DV, TempNotas.DV) AS DV,
+                COALESCE(TempEstudiantes.Nombre_1, TempDocentesPlanificados.Nombre, TempNotas.Nombres) AS Nombre_1,
+                TempEstudiantes.Nombre_2 AS Nombre_2,
+                COALESCE(TempEstudiantes.Primer_Apellido, TempDocentesPlanificados.Apellido_P, TempNotas.Apellido_Paterno) AS Apellido_1,
+                COALESCE(TempEstudiantes.Segundo_Apellido, TempNotas.Apellido_Materno) AS Apellido_2,
+                COALESCE(TempDocentesPlanificados.Email_personal, TempDocentesPlanificados.Email_institucional) AS Correos,
+                TempDocentesPlanificados.Telefono AS Telefonos
+            FROM
+                TempEstudiantes
+            LEFT JOIN TempDocentesPlanificados
+                ON TempEstudiantes.RUN = TempDocentesPlanificados.RUN
+            LEFT JOIN TempNotas
+                ON TempEstudiantes.RUN = TempNotas.RUN
         ";
         $this->InsertarDatosFinales($query, 'Personas');
 
         // Insertar datos en la tabla Estudiantes
         $query = "INSERT INTO Estudiantes (RUN, DV, Causal_de_bloqueo, Bloqueo, Numero_de_estudiante, Cohorte, Nombre_Carrera)
             SELECT
-                e.RUN,
-                e.DV,
-                e.Causal_Bloqueo,
-                e.Bloqueo,
-                e.Numero_de_alumno,
-                e.Cohorte,
-                e.Carrera
-            FROM TempEstudiantes e
+                COALESCE(TempEstudiantes.RUN, TempNotas.RUN) AS RUN,
+                COALESCE(TempEstudiantes.DV, TempNotas.DV) AS DV,
+                TempEstudiantes.Causal_Bloqueo AS Causal_de_bloqueo,
+                TempEstudiantes.Bloqueo AS Bloqueo,
+                COALESCE(TempEstudiantes.Numero_de_alumno, TempNotas.Numero_de_alumno) AS Numero_de_estudiante,
+                COALESCE(TempEstudiantes.Cohorte, TempNotas.Cohorte) AS Cohorte,
+                COALESCE(TempEstudiantes.Carrera, TempNotas.Plan) AS Nombre_Carrera
+            FROM
+                TempEstudiantes
+            LEFT JOIN TempNotas
+                ON TempEstudiantes.RUN = TempNotas.RUN
         ";
         $this->InsertarDatosFinales($query, 'Estudiantes');
 
         // Insertar datos en la tabla Academicos
         $query = "INSERT INTO Academicos (RUN, DV, Estamento, Grado_academico, Contrato, Jerarquia, Jornada)
-            SELECT
-                d.RUN,
-                e.DV,
-                d.Estamento,
-                d.Grado_academico,
-                d.Contrato,
-                d.Jerarquia,
-                d.Jornada
-            FROM TempDocentesPlanificados d
-            JOIN TempEstudiantes e ON d.RUN = e.RUN
-            WHERE e.RUN IS NULL
+            SELECT DISTINCT
+                COALESCE(TempDocentesPlanificados.RUN, TempNotas.RUN, TempEstudiantes.RUN) AS RUN,
+                COALESCE(TempNotas.DV, TempEstudiantes.DV) AS DV,
+                TempDocentesPlanificados.Estamento AS Estamento,
+                TempDocentesPlanificados.Grado_academico AS Grado_academico,
+                TempDocentesPlanificados.Contrato AS Contrato,
+                TempDocentesPlanificados.Jerarquia AS Jerarquia,
+                COALESCE(TempDocentesPlanificados.Diurno, TempDocentesPlanificados.Vespertino) AS Jornada
+            FROM
+                TempDocentesPlanificados
+            LEFT JOIN TempNotas
+                ON TempDocentesPlanificados.RUN = TempNotas.RUN
+            LEFT JOIN TempEstudiantes
+                ON TempDocentesPlanificados.RUN = TempEstudiantes.RUN
+            WHERE TempDocentesPlanificados.Estamento = 'Académico'
         ";
         $this->InsertarDatosFinales($query, 'Academicos');
 
-        // Insertar datos en la tabla Cursos
-        $query = "INSERT INTO Cursos (Sigla_curso, Seccion_curso, Nombre, Nivel, Ciclo, Tipo, Oportunidad, Duración, Nombre_Departamento, Código_Departamento)
-            SELECT
-                p.Id_Asignatura AS Sigla_curso,
-                p.Seccion AS Seccion_curso,
-                a.Asignatura AS Nombre,
-                a.Nivel AS Nivel,
-                a.Prerequisito_ciclo AS Ciclo,
-                '' AS Tipo, -- Ajustar esto según los datos disponibles
-                '' AS Oportunidad, -- Ajustar esto según los datos disponibles
-                p.Duracion AS Duración,
-                p.Departamento AS Nombre_Departamento,
-                p.Codigo_Depto AS Código_Departamento
-            FROM TempPlaneacion p
-            LEFT JOIN TempAsignaturas a ON p.Id_Asignatura = a.Asignatura_id
-        ";
-        $this->InsertarDatosFinales($query, 'Cursos');
-
         // Insertar datos en la tabla Administrativos
         $query = "INSERT INTO Administrativos (RUN, DV, Estamento, Grado_academico, Contrato, Cargo)
-            SELECT
-                d.RUN,
-                d.DV,
-                d.Estamento,
-                d.Grado_academico,
-                d.Contrato,
-                d.Cargo
-            FROM TempDocentesPlanificados d
-            WHERE d.Estamento = 'Administrativo'
+            SELECT DISTINCT
+                COALESCE(TempDocentesPlanificados.RUN, TempNotas.RUN, TempEstudiantes.RUN) AS RUN,
+                COALESCE(TempNotas.DV, TempEstudiantes.DV) AS DV,
+                TempDocentesPlanificados.Estamento AS Estamento,
+                TempDocentesPlanificados.Grado_academico AS Grado_academico,
+                TempDocentesPlanificados.Contrato AS Contrato,
+                TempDocentesPlanificados.Cargo AS Cargo
+            FROM
+                TempDocentesPlanificados
+            LEFT JOIN TempNotas
+                ON TempDocentesPlanificados.RUN = TempNotas.RUN
+            LEFT JOIN TempEstudiantes
+                ON TempDocentesPlanificados.RUN = TempEstudiantes.RUN
+            WHERE TempDocentesPlanificados.Estamento = 'Administrativo'
         ";
         $this->InsertarDatosFinales($query, 'Administrativos');
 
-        // Insertar datos en la tabla Cursos_Equivalencias
-        $query = "INSERT INTO Cursos_Equivalencias (Sigla_curso, Seccion_curso, Sigla_equivalente, Ciclo)
+        // Insertar datos en la tabla Cursos
+        $query = "INSERT INTO Cursos (Sigla_curso, Seccion_curso, Periodo_curso, Nombre, Nivel, Ciclo, Tipo, Oportunidad, Duración, Nombre_Departamento, Código_Departamento, RUN_Academico, DV_Academico, Nombre_Academico, Apellido1_Academico, Apellido2_Academico, Principal)
             SELECT
-                p.Id_Asignatura AS Sigla_curso,
-                p.Seccion AS Seccion_curso,
-                e.Asignatura_id AS Sigla_equivalente,
-                e.Prerequisito_ciclo AS Ciclo
-            FROM TempPlaneacion p
-            LEFT JOIN TempAsignaturas e ON p.Id_Asignatura = e.Asignatura_id
+                TempAsignaturas.Asignatura_id AS Sigla_curso,
+                TempPlaneacion.Seccion AS Seccion_curso,
+                TempPlaneacion.Periodo AS Periodo_curso,
+                TempAsignaturas.Asignatura AS Nombre,
+                TempAsignaturas.Nivel AS Nivel,
+                TempAsignaturas.Ciclo AS Ciclo,
+                '' AS Tipo, -- Valor desconocido.
+                TempNotas.Convocatoria AS Oportunidad,
+                TempPlaneacion.Duracion AS Duración,
+                TempPlaneacion.Departamento AS Nombre_Departamento,
+                TempPlaneacion.Codigo_Depto AS Código_Departamento,
+                TempDocentesPlanificados.RUN AS RUN_Academico,
+                'X' AS DV_Academico, -- Valor desconocido.
+                TempDocentesPlanificados.Nombre AS Nombre_Academico,
+                COALESCE(TempDocentesPlanificados.Apellido_P, 'DESCONOCIDO') AS Apellido1_Academico,
+                COALESCE(TempDocentesPlanificados.Apellido_M, 'DESCONOCIDO') AS Apellido2_Academico,
+                TempPlaneacion.Profesor_Principal AS Principal
+            FROM
+                TempAsignaturas
+            JOIN TempPlaneacion ON TempAsignaturas.Asignatura_id = TempPlaneacion.Id_Asignatura
+            LEFT JOIN TempNotas ON TempAsignaturas.Asignatura_id = TempNotas.Codigo_Asignatura
+            LEFT JOIN TempDocentesPlanificados ON TempPlaneacion.RUN = TempDocentesPlanificados.RUN
+        ";
+        $this->InsertarDatosFinales($query, 'Cursos');
+
+        // Insertar datos en la tabla Cursos_Equivalencias
+        $query = "INSERT INTO Cursos_Equivalencias (Sigla_curso, Sigla_equivalente, Ciclo)
+            SELECT
+                -- Vamos a llamar 2 veces a la tabla TempAsignaturas, una para el curso y otra para el equivalente
+                A1.Asignatura_id AS Sigla_curso,
+                A2.Asignatura_id AS Sigla_equivalente,
+                A1.Ciclo AS Ciclo
+            FROM
+                TempAsignaturas A1
+            JOIN TempAsignaturas A2 
+                -- Extraemos el código de asignatura eliminando el plan
+                ON SUBSTRING(A1.Asignatura_id, LENGTH(A1.Plan) + 1) = SUBSTRING(A2.Asignatura_id, LENGTH(A2.Plan) + 1)
+                -- Nos aseguramos que los planes sean distintos
+                AND A1.Plan != A2.Plan
         ";
         $this->InsertarDatosFinales($query, 'Cursos_Equivalencias');
 
         // Insertar datos en la tabla Cursos_Prerequisitos
-        $query = "INSERT INTO Cursos_Prerequisitos (Sigla_curso, Seccion_curso, Sigla_prerequisito, Ciclo)
+        $query = "INSERT INTO Cursos_Prerequisitos (Sigla_curso, Sigla_prerequisito, Ciclo)
             SELECT
-                p.Id_Asignatura AS Sigla_curso,
-                p.Seccion AS Seccion_curso,
-                pr.Asignatura_id AS Sigla_prerequisito,
-                pr.Prerequisito_ciclo AS Ciclo
-            FROM TempPlaneacion p
-            LEFT JOIN TempPrerequisitos pr ON p.Id_Asignatura = pr.Asignatura_id
+                TempAsignaturas.Asignatura_id AS Sigla_curso,
+                TempPrerequisitos.Prerequisitos AS Sigla_prerequisito,
+                TempAsignaturas.Ciclo AS Ciclo
+            FROM
+                TempAsignaturas
+            JOIN TempPrerequisitos ON TempAsignaturas.Asignatura_id = TempPrerequisitos.Asignatura_id
         ";
         $this->InsertarDatosFinales($query, 'Cursos_Prerequisitos');
 
         // Insertar datos en la tabla Cursos_Minimos
-        $query = "INSERT INTO Cursos_Minimos (Sigla_curso, Seccion_curso, Sigla_minimo, Ciclo, Nombre, Tipo, Nivel)
+        $query = "INSERT INTO Cursos_Minimos (Sigla_curso, Sigla_minimo, Ciclo, Nombre, Tipo, Nivel)
             SELECT
-                p.Id_Asignatura AS Sigla_curso,
-                p.Seccion AS Seccion_curso,
-                m.Asignatura_id AS Sigla_minimo,
-                m.Prerequisito_ciclo AS Ciclo,
-                m.Asignatura AS Nombre,
-                '' AS Tipo, -- Ajustar esto según los datos disponibles
-                m.Nivel AS Nivel
-            FROM TempPlaneacion p
-            LEFT JOIN TempAsignaturas m ON p.Id_Asignatura = m.Asignatura_id
+                TempAsignaturas.Asignatura_id AS Sigla_curso,
+                TempMallaMagia.Col1 AS Sigla_minimo,
+                -- Buscamos el nombre en base alguna sigla que contenga MallaMagia.Col1
+                -- Agregamos el plan al codigo de la asignatura para encontrar el nombre
+                (SELECT Asignatura FROM TempAsignaturas WHERE Plan || TempMallaMagia.Col1 = Asignatura_id LIMIT 1) AS Nombre,
+                '' AS Tipo, -- Valor desconocido.
+                -- Buscamos el nivel en base alguna sigla que contenga MallaMagia.Col1
+                -- Agregamos el plan al codigo de la asignatura para encontrar el nivel
+                (SELECT Nivel FROM TempAsignaturas WHERE Plan || TempMallaMagia.Col1 = Asignatura_id LIMIT 1) AS Nivel
+            FROM
+                TempAsignaturas
+            JOIN TempMallaMagia ON TempPrequisitos.Prerequisitos = TempMallaMagia.Col1
         ";
         $this->InsertarDatosFinales($query, 'Cursos_Minimos');
 
         // Insertar datos en la tabla Planes_Estudio
         $query = "INSERT INTO Planes_Estudio (Código_Plan, Inicio_Vigencia, Jornada, Modalidad, Sede, Plan, Nombre_Facultad, Grado, Nombre_Carrera)
             SELECT
-                p.Código_Plan,
-                p.Inicio_Vigencia,
-                p.Jornada,
-                p.Modalidad,
-                p.Sede,
-                p.Plan,
-                p.Facultad AS Nombre_Facultad,
-                p.Grado,
-                p.Carrera AS Nombre_Carrera
-            FROM TempPlanes p
+                TempPlanes.Codigo_Plan AS Código_Plan,
+                TempPlanes.Inicio_Vigencia AS Inicio_Vigencia,
+                TempPlanes.Jornada AS Jornada,
+                TempPlanes.Modalidad AS Modalidad,
+                TempPlanes.Sede AS Sede,
+                TempPlanes.Plan AS Plan,
+                TempPlanes.Facultad AS Nombre_Facultad,
+                TempPlanes.Grado AS Grado,
+                TempPlanes.Carrera AS Nombre_Carrera
+            FROM TempPlanes
         ";
         $this->InsertarDatosFinales($query, 'Planes_Estudio');
+
+        // Insertar datos en la tabla Programacion_Academica
+        $query = "INSERT INTO Programacion_Academica (Sigla_curso, Seccion_curso, Código_Plan, Periodo_Oferta, Cupos, Sala, Hora_Inicio, Hora_Fin, Fecha_Inicio, Fecha_Fin, Inscritos)
+            SELECT
+                TempAsignaturas.Asignatura_id AS Sigla_curso,
+                TempPlaneacion.Seccion AS Seccion_curso,
+                TempPlaneacion.Codigo_Depto AS Código_Plan,
+                TempPlaneacion.Periodo AS Periodo_Oferta,
+                TempPlaneacion.Cupo AS Cupos,
+                TempPlaneacion.Lugar AS Sala,
+                TempPlaneacion.Hora_Inicio AS Hora_Inicio,
+                TempPlaneacion.Hora_Fin AS Hora_Fin,
+                TempPlaneacion.Fecha_Inicio AS Fecha_Inicio,
+                TempPlaneacion.Fecha_Fin AS Fecha_Fin,
+                TempPlaneacion.Inscritos AS Inscritos
+            FROM
+                TempAsignaturas
+            JOIN TempPlaneacion ON TempAsignaturas.Asignatura_id = TempPlaneacion.Id_Asignatura
+        ";
+        $this->InsertarDatosFinales($query, 'Programacion_Academica');
 
         // Insertar datos en la tabla Departamento
         $query = "INSERT INTO Departamento (Nombre, Código, Nombre_Facultad)
             SELECT DISTINCT
-                p.Departamento AS Nombre,
-                p.Codigo_Depto AS Código,
-                p.Facultad AS Nombre_Facultad
-            FROM TempPlaneacion p
+                TempPlaneacion.Departamento AS Nombre,
+                TempPlaneacion.Codigo_Depto AS Código,
+                TempPlaneacion.Facultad AS Nombre_Facultad
+            FROM TempPlaneacion
         ";
         $this->InsertarDatosFinales($query, 'Departamento');
 
         // Insertar datos en la tabla Nota
-        $query = "INSERT INTO Nota (Sigla_curso, Seccion_curso, Numero_de_estudiante, RUN, DV, Nota, Descripción, Resultado, Calificación)
+        $query = "INSERT INTO Nota (Sigla_curso, Seccion_curso, Periodo_curso, Numero_de_estudiante, RUN, DV, Nota, Descripción, Resultado, Calificación)
             SELECT
-                n.Código_Asignatura AS Sigla_curso,
-                p.Seccion AS Seccion_curso,
-                n.Número_de_alumno AS Numero_de_estudiante,
-                n.RUN,
-                n.DV,
-                n.Calificación AS Nota,
-                '' AS Descripción, -- Ajustar esto según los datos disponibles
-                '' AS Resultado, -- Ajustar esto según los datos disponibles
-                n.Nota AS Calificación
-            FROM TempNotas n
-            LEFT JOIN TempPlaneacion p ON n.Código_Asignatura = p.Id_Asignatura AND n.Periodo_Asignatura = p.Periodo
+                TempAsignaturas.Asignatura_id AS Sigla_curso,
+                TempPlaneacion.Seccion AS Seccion_curso,
+                TempNotas.Periodo_Asignatura AS Periodo_curso,
+                TempNotas.Numero_de_alumno AS Numero_de_estudiante,
+                TempNotas.RUN AS RUN,
+                TempNotas.DV AS DV,
+                TempNotas.Nota AS Nota,
+                '' AS Descripción, -- Valor a agregar con la función actualizar_nota
+                '' AS Resultado, -- Valor a agregar con la función actualizar_nota
+                TempNotas.Calificacion AS Calificación
+            FROM
+                TempAsignaturas
+            JOIN TempPlaneacion ON TempAsignaturas.Asignatura_id = TempPlaneacion.Id_Asignatura
+            JOIN TempNotas ON TempAsignaturas.Asignatura_id = TempNotas.Codigo_Asignatura
         ";
         $this->InsertarDatosFinales($query, 'Nota');
 
         // Insertar datos en la tabla Avance_Academico
-        $query = "INSERT INTO Avance_Academico (Sigla_curso, Seccion_curso, RUN, DV, Numero_de_estudiante, Periodo_Oferta, Nota, Descripción, Ultima_Carga, Ultimo_Logro)
+        $query = "INSERT INTO Avance_Academico (Sigla_curso, Seccion_curso, Periodo_curso, RUN, DV, Numero_de_estudiante, Periodo_Oferta, Nota, Descripción, Ultima_Carga, Ultimo_Logro)
             SELECT
-                n.Código_Asignatura AS Sigla_curso,
-                p.Seccion AS Seccion_curso,
-                n.RUN,
-                n.DV,
-                n.Número_de_alumno AS Numero_de_estudiante,
-                n.Periodo_Asignatura AS Periodo_Oferta,
-                n.Nota,
-                '' AS Descripción, -- Ajustar esto según los datos disponibles
-                n.Última_Carga AS Ultima_Carga,
-                n.Logro AS Ultimo_Logro
-            FROM TempNotas n
-            LEFT JOIN TempPlaneacion p ON n.Código_Asignatura = p.Id_Asignatura AND n.Periodo_Asignatura = p.Periodo
+                TempAsignaturas.Asignatura_id AS Sigla_curso,
+                TempPlaneacion.Seccion AS Seccion_curso,
+                TempNotas.Periodo_Asignatura AS Periodo_curso,
+                TempNotas.RUN AS RUN,
+                TempNotas.DV AS DV,
+                TempNotas.Numero_de_alumno AS Numero_de_estudiante,
+                TempNotas.Periodo_Asignatura AS Periodo_Oferta,
+                TempNotas.Nota AS Nota,
+                '' AS Descripción, -- Valor a agregar con la función actualizar_nota
+                '' AS Resultado, -- Valor a agregar con la función actualizar_nota
+                TempNotas.Calificacion AS Calificación,
+                TempEstudiantes.Ultima_Carga AS Ultima_Carga,
+                TempEstudiantes.Logro AS Ultimo_Logro
+            FROM
+                TempAsignaturas
+            JOIN TempPlaneacion ON TempAsignaturas.Asignatura_id = TempPlaneacion.Id_Asignatura
+            JOIN TempNotas ON TempAsignaturas.Asignatura_id = TempNotas.Codigo_Asignatura
+            JOIN TempEstudiantes ON TempNotas.RUN = TempEstudiantes.RUN
         ";
         $this->InsertarDatosFinales($query, 'Avance_Academico');
+
+        // Eliminar las tablas temporales
+        $this->EliminarTablasTemporales();
 
         // Cerrar la conexión
         pg_close($this->conn);
     }
 
-    public function CrearTablasTemporales()
+    private function CrearTablasTemporales()
     {
         $queries = [
             "CREATE TEMP TABLE TempAsignaturas (
                 Plan VARCHAR(100),
-                Asignatura_id VARCHAR(100) NOT NULL,
-                Asignatura VARCHAR(100) NOT NULL,
-                Nivel VARCHAR(100) NOT NULL,
+                Asignatura_id VARCHAR(100),
+                Asignatura VARCHAR(100),
+                Nivel VARCHAR(100),
                 Ciclo VARCHAR(100)
             )",
             "CREATE TEMP TABLE TempPlaneacion (
-                Periodo VARCHAR(100) NOT NULL,
-                Sede VARCHAR(100) NOT NULL,
-                Facultad VARCHAR(100) NOT NULL,
-                Codigo_Depto VARCHAR(100) NOT NULL,
-                Departamento VARCHAR(100) NOT NULL,
-                Id_Asignatura VARCHAR(100) NOT NULL,
-                Asignatura VARCHAR(100) NOT NULL,
-                Seccion VARCHAR(100) NOT NULL,
+                Periodo VARCHAR(100),
+                Sede VARCHAR(100),
+                Facultad VARCHAR(100),
+                Codigo_Depto VARCHAR(100),
+                Departamento VARCHAR(100),
+                Id_Asignatura VARCHAR(100),
+                Asignatura VARCHAR(100),
+                Seccion VARCHAR(100),
                 Duracion VARCHAR(100),
                 Jornada VARCHAR(100),
                 Cupo INT,
@@ -652,7 +635,7 @@ class Cargador
                 Asignatura VARCHAR(100),
                 Nivel float,
                 Prerequisitos VARCHAR(100),
-                Prerequisitos_1 float
+                Prerequisitos_1 int
             )",
             "CREATE TEMP TABLE TempPlanesMagia (
                 Planes_Vigentes VARCHAR(100)
@@ -693,16 +676,15 @@ class Cargador
         }
     }
 
-
-    public function InsertarDatosTemporales($datos)
+    private function InsertarDatosTemporales($datos)
     {
         foreach ($datos['Asignaturas'] as $asignatura) {
-            $query = "INSERT INTO TempAsignaturas (Plan, Asignatura_id, Asignatura, Nivel, Prerequisito_ciclo) VALUES (
+            $query = "INSERT INTO TempAsignaturas (Plan, Asignatura_id, Asignatura, Nivel, Ciclo) VALUES (
                 '{$asignatura[0]}',  -- Plan
                 '{$asignatura[1]}',  -- Asignatura_id
                 '{$asignatura[2]}',  -- Asignatura
                 '{$asignatura[3]}',  -- Nivel
-                '{$asignatura[4]}'   -- Prerequisito_ciclo
+                '{$asignatura[4]}'   -- Ciclo
             )";
             $result = pg_query($this->conn, $query);
             if (!$result) {
@@ -936,11 +918,151 @@ class Cargador
         }
     }
 
-    public function InsertarDatosFinales($query, $nombre_tabla)
+    private function InsertarDatosFinales($query, $nombre_tabla)
     {
         $result = pg_query($this->conn, $query);
         if (!$result) {
             die("Error en la inserción de datos en la tabla $nombre_tabla: " . pg_last_error());
+        }
+    }
+
+    private function EliminarTablasTemporales()
+    {
+        $queries = [
+            "DROP TABLE TempAsignaturas",
+            "DROP TABLE TempPlaneacion",
+            "DROP TABLE TempEstudiantes",
+            "DROP TABLE TempNotas",
+            "DROP TABLE TempDocentesPlanificados",
+            "DROP TABLE TempPlanes",
+            "DROP TABLE TempPrerequisitos",
+            "DROP TABLE TempPlanesMagia",
+            "DROP TABLE TempPlanesHechiceria",
+            "DROP TABLE TempMallaMagia",
+            "DROP TABLE TempMallaHechiceria"
+        ];
+        foreach ($queries as $query) {
+            $result = pg_query($this->conn, $query);
+            if (!$result) {
+                die("Error en la eliminación de la tabla temporal: " . pg_last_error());
+            }
+        }
+    }
+
+    private function CrearTriggers()
+    {
+        // Eliminar los triggers si existen
+        $queries = [
+            "DROP FUNCTION IF EXISTS before_insert_cursos_func()",
+            "DROP TRIGGER IF EXISTS before_insert_cursos ON Cursos",
+            "DROP FUNCTION IF EXISTS actualizar_nota()",
+            "DROP TRIGGER IF EXISTS trigger_actualizar_nota ON Nota",
+            "DROP TRIGGER IF EXISTS trigger_actualizar_nota_avance ON Avance_Academico"
+        ];
+        foreach ($queries as $query) {
+            $result = pg_query($this->conn, $query);
+            if (!$result) {
+                die("Error en la eliminación de triggers: " . pg_last_error());
+            }
+        }
+
+        // Crear la función para actualizar la tabla Cursos
+        $funcion_actualizar_cursos = "CREATE OR REPLACE FUNCTION before_insert_cursos_func()
+        RETURNS TRIGGER AS $$
+        BEGIN
+            IF NEW.RUN_Academico IS NULL THEN
+                NEW.RUN_Academico = NEW.Código_Departamento;
+            END IF;
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;";
+
+        $result = pg_query($this->conn, $funcion_actualizar_cursos);
+        if (!$result) {
+            die("Error en la creación de la funcion_actualizar_cursos: " . pg_last_error());
+        }
+
+        // Crear el trigger para la tabla Cursos
+        $trigger_cursos = "CREATE TRIGGER before_insert_cursos
+        BEFORE INSERT ON Cursos
+        FOR EACH ROW
+        EXECUTE FUNCTION before_insert_cursos_func();";
+
+        $result = pg_query($this->conn, $trigger_cursos);
+        if (!$result) {
+            die("Error en la creación del trigger(cursos): " . pg_last_error());
+        }
+
+        // Crear la función para actualizar la tabla Nota
+        $funcion_actualizar_nota = "CREATE OR REPLACE FUNCTION actualizar_nota()
+        RETURNS TRIGGER AS $$
+        BEGIN
+            IF NEW.Calificación IS NULL THEN
+                NEW.Resultado := 'Curso Vigente en el período académico';
+                NEW.Descripción := 'curso vigente';
+            ELSIF NEW.Calificación = 'P' THEN
+                NEW.Resultado := 'Nota Pendiente';
+                NEW.Descripción := 'Curso incompleto';
+            ELSIF NEW.Calificación = 'NP' THEN
+                NEW.Resultado := 'No se Presenta';
+                NEW.Descripción := 'Reprobatorio';
+            ELSIF NEW.Calificación = 'EX' THEN
+                NEW.Resultado := 'Eximido';
+                NEW.Descripción := 'Aprobatorio';
+            ELSIF NEW.Calificación = 'A' THEN
+                NEW.Resultado := 'Aprobado';
+                NEW.Descripción := 'Aprobatorio';
+            ELSIF NEW.Calificación = 'R' THEN
+                NEW.Resultado := 'Reprobado';
+                NEW.Descripción := 'Reprobatorio';
+            ELSIF NEW.Calificación = 'SO' THEN
+                NEW.Resultado := 'Sobresaliente';
+                NEW.Descripción := 'Aprobatorio';
+            ELSIF NEW.Calificación = 'MB' THEN
+                NEW.Resultado := 'Muy Bueno';
+                NEW.Descripción := 'Aprobatorio';
+            ELSIF NEW.Calificación = 'B' THEN
+                NEW.Resultado := 'Bueno';
+                NEW.Descripción := 'Aprobatorio';
+            ELSIF NEW.Calificación = 'SU' THEN
+                NEW.Resultado := 'Suficiente';
+                NEW.Descripción := 'Aprobatorio';
+            ELSIF NEW.Calificación = 'I' THEN
+                NEW.Resultado := 'Insuficiente';
+                NEW.Descripción := 'Reprobatorio';
+            ELSIF NEW.Calificación = 'M' THEN
+                NEW.Resultado := 'Malo';
+                NEW.Descripción := 'Reprobatorio';
+            END IF;
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;";
+
+        $result = pg_query($this->conn, $funcion_actualizar_nota);
+        if (!$result) {
+            die("Error en la creación de la funcion_actualizar_nota: " . pg_last_error());
+        }
+
+        // Crear el trigger para la tabla Nota
+        $trigger_actualizar_nota = "CREATE TRIGGER trigger_actualizar_nota
+        BEFORE INSERT OR UPDATE ON Nota
+        FOR EACH ROW
+        EXECUTE FUNCTION actualizar_nota();";
+
+        $result = pg_query($this->conn, $trigger_actualizar_nota);
+        if (!$result) {
+            die("Error en la creación del trigger(nota): " . pg_last_error());
+        }
+
+        // Crear el trigger para la tabla Avance_Academico
+        $trigger_actualizar_nota_avance = "CREATE TRIGGER trigger_actualizar_nota_avance
+        BEFORE INSERT OR UPDATE ON Avance_Academico
+        FOR EACH ROW
+        EXECUTE FUNCTION actualizar_nota();";
+
+        $result = pg_query($this->conn, $trigger_actualizar_nota_avance);
+        if (!$result) {
+            die("Error en la creación del trigger (avance): " . pg_last_error());
         }
     }
 
